@@ -123,23 +123,27 @@ class TabBarBottom extends React.Component<BottomTabBarProps, State> {
 
   componentDidMount() {
     if (Platform.OS === 'ios') {
-      Keyboard.addListener('keyboardWillShow', this._handleKeyboardShow);
-      Keyboard.addListener('keyboardWillHide', this._handleKeyboardHide);
+      this.keyboardShowUnsubscribe = Keyboard.addListener('keyboardWillShow', this._handleKeyboardShow);
+      this.keyboardHideUnsubscribe = Keyboard.addListener('keyboardWillHide', this._handleKeyboardHide);
     } else {
-      Keyboard.addListener('keyboardDidShow', this._handleKeyboardShow);
-      Keyboard.addListener('keyboardDidHide', this._handleKeyboardHide);
+      this.keyboardShowUnsubscribe = Keyboard.addListener('keyboardDidShow', this._handleKeyboardShow);
+      this.keyboardHideUnsubscribe = Keyboard.addListener('keyboardDidHide', this._handleKeyboardHide);
     }
   }
 
   componentWillUnmount() {
     if (Platform.OS === 'ios') {
-      Keyboard.removeListener('keyboardWillShow', this._handleKeyboardShow);
-      Keyboard.removeListener('keyboardWillHide', this._handleKeyboardHide);
+      this.keyboardShowUnsubscribe?.()
+      this.keyboardHideUnsubscribe?.()
     } else {
-      Keyboard.removeListener('keyboardDidShow', this._handleKeyboardShow);
-      Keyboard.removeListener('keyboardDidHide', this._handleKeyboardHide);
+      this.keyboardShowUnsubscribe?.()
+      this.keyboardHideUnsubscribe?.()
     }
   }
+
+  // @ts-ignore
+  keyboardShowUnsubscribe: undefined | (() => void) = undefined
+  keyboardHideUnsubscribe: undefined | (() => void) = undefined
 
   // @ts-ignore
   context: 'light' | 'dark';
